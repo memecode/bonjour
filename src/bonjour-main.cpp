@@ -1,9 +1,16 @@
-#include <Rcpp.h>
+#if HAS_R
+#  include <Rcpp.h>
+#endif
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 
-using namespace Rcpp;
+#if HAS_R
+  using namespace Rcpp;
+#else
+#  define Rf_error printf
+#  define Rf_warning printf
+#endif
 
 #include "mdns.h"
 #include "b64.h"
@@ -104,7 +111,7 @@ static int open_client_sockets(int* sockets, int max_sockets, int port) {
   unsigned int ret;
   unsigned int num_retries = 4;
   do {
-    adapter_address = malloc(address_size);
+    adapter_address = (IP_ADAPTER_ADDRESSES*)malloc(address_size);
     ret = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_ANYCAST, 0,
                                adapter_address, &address_size);
     if (ret == ERROR_BUFFER_OVERFLOW) {
@@ -581,3 +588,33 @@ std::string int_bnjr_query(std::string q, int scan_time = 5L) {
   return(out);
 
 }
+
+
+#if !HAS_R
+int main(int args, char **arg)
+{
+    #ifdef _WIN32
+        WSADATA wsaData;
+        auto iResult  = WSAStartup(MAKEWORD(2,2), &wsaData);
+        if (iResult != 0)
+        {
+            printf("WSAStartup failed: %d\n", iResult);
+            return 1;
+        }
+    #endif
+
+    if (args < 2)
+    {
+        printf("Usage: %s <query>[ <timeout]\n"
+            "Ie where query = '_smb._tcp.local.'\n"
+            "and timeout is an option number of seconds.\n",
+            arg[0]);
+        return 0;
+    }
+
+    auto timeout = args > 2 ? atoi(arg[2]) : 5;
+    auto result = int_bnjr_query(arg[1], timeout);
+    printf("%s", result.c_str());
+    return 0;
+}
+#endif
