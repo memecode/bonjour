@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 3.18)
+project(bonjour)
 
 add_executable(bonjour
     src/bonjour-main.cpp)
