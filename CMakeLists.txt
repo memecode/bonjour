@@ -4,7 +4,11 @@ project(bonjour)
 add_executable(bonjour
     src/bonjour-main.cpp)
 
-target_link_libraries(bonjour
-    PUBLIC
-        Ws2_32.lib
-        Iphlpapi.lib)
+if (WIN32)
+    target_link_libraries(bonjour
+        PUBLIC
+            Ws2_32.lib
+            Iphlpapi.lib)
+endif()
+
+install(TARGETS bonjour)
