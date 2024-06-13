@@ -44,10 +44,10 @@ public:
       '4', '5', '6', '7', '8', '9', '+', '/'
     };
 
-    size_t in_len = data.size();
-    size_t out_len = 4 * ((in_len + 2) / 3);
+    ptrdiff_t in_len = data.size();
+    ptrdiff_t out_len = 4 * ((in_len + 2) / 3);
     std::string ret(out_len, '\0');
-    size_t i;
+    ptrdiff_t i;
     char *p = const_cast<char*>(ret.c_str());
 
     for (i = 0; i < in_len - 2; i += 3) {
