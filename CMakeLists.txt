@@ -9,6 +9,10 @@ if (WIN32)
         PUBLIC
             Ws2_32.lib
             Iphlpapi.lib)
+elseif (HAIKU)
+    target_link_libraries(bonjour
+        PUBLIC
+            network)
 endif()
 
 install(TARGETS bonjour)
